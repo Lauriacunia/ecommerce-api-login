@@ -12,14 +12,7 @@ switch (process.env.DB_CONNECTION) {
             carritosDao = new MongoDBCarritos();
         })
         break;
-    case 'firebase':
-        import('./productos/FirebaseProductos.js').then(({FirebaseProductos})=>{
-            productosDao = new FirebaseProductos();
-        })
-        import('./carritos/FirebaseCarrito.js').then(({FirebaseCarrito})=>{
-            carritosDao = new FirebaseCarrito();
-        })
-        break;
+
     default:
             throw new Error('No se ha definido una conexión a la base de datos');
         break;

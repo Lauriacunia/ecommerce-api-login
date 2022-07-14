@@ -5,8 +5,9 @@ import http from 'http';
 import cors from 'cors';
 import { normalize, schema, denormalize } from 'normalizr';
 import { inspect } from 'util';
-import productosRouter from './routes/ProductosRoutes.js';
-import carritosRouter from './routes/CarritosRoutes.js';
+import apiRouter from './routes/indexRoutes.js';
+import { connectMongoDB } from './config/configMongoDB.js';
+
 const app = express();
 const PORT = 8080;
 // const chat = {
@@ -43,8 +44,8 @@ app.use(cors(
 
 
 /** Routes */
-app.use('/api/productos', productosRouter);
-app.use('/api/carritos', carritosRouter);
+app.use('/api', apiRouter);
+
 
 function onInit() {
     console.log('Iniciando App...');
@@ -113,7 +114,8 @@ io.on('connection', (socket) => {
 }
 );
 
-
+/** ★━━━━━━━━━━━★ CONNECTION MONGO DB ★━━━━━━━━━━━★ */
+connectMongoDB();
 /** ★━━━━━━━━━━━★ CONNECTION SERVER ★━━━━━━━━━━━★ */
 
 try {

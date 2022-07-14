@@ -1,12 +1,4 @@
-import admin from 'firebase-admin'
-import serviceAccount from '../serviceAccountKey.json' 
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-console.log('Firebase admin initialized');
-
-const db = admin.firestore();
 
 const productos = [
     {
@@ -67,38 +59,4 @@ const productos = [
     },
 
 ];
-const carritos = [
-    { productos: []
-    },
-    { productos: []
-    },
-    { productos: []
-    },
-];
 
-async function createProductos() {
-  const productosCol = db.collection('productos')
-  try{
-    productos.map(async (producto) => {
-        await productosCol.add(producto)
-    })
-    console.log('Productos insertados');
-  }catch (error) {
-        console.log(error);
-    }
-}
-async function createCarritos() {
-
-    const carritosCol = db.collection('carritos')
-    try{
-        carritos.map(async (carrito) => {
-            await carritosCol.add(carrito)
-        })
-        console.log('Carritos insertados');
-    }catch (error) {
-            console.log(error);
-        }
-}
-
-createProductos();
-createCarritos();
