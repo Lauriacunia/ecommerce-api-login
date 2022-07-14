@@ -3,11 +3,9 @@ import morgan from 'morgan';
 import { Server } from "socket.io";
 import http from 'http';
 import cors from 'cors';
-import { normalize, schema, denormalize } from 'normalizr';
-import { inspect } from 'util';
 import apiRouter from './routes/indexRoutes.js';
 import { connectMongoDB } from './config/configMongoDB.js';
-
+import websockets from './config/websockets.js';
 const app = express();
 const PORT = 8080;
 // const chat = {
@@ -80,42 +78,11 @@ function onInit() {
 // }
 
 /** ★━━━━━━━━━━━★ WEBSOCKET ★━━━━━━━━━━━★*/
-
-// Nuevo servidor para el chat
-io.on('connection', (socket) => {
-    // el socket trae toda la data del cliente
-     console.log('New user connected. Soquet ID : ', socket.id);
-
-    /** on para escuchar
-     *  emit para enviar
-     */
-    socket.on('set-user', (user) => {
-        console.log('Current User Data', user);
-       // socket.emit('user-connected', user);
-       // socket.broadcast.emit('user-connected', user);
-    });
-  
-   /** El servidor recibe los nuevos mensajes y los re-envia los */
-    socket.on('new-message', (message) => {
-        console.log('New Message', message);
-        // chat.mensajes.push(message);
-        // const chatNormalized =  normalizeChat(chat);
-        // print(chatNormalized);
-        mensajes.push(message);
-        socket.emit('all-messages', mensajes);
-        socket.broadcast.emit('all-messages',mensajes);
-    });
-
-   // socket.emit('messages', messages);
-    socket.on('disconnect', (user) => {
-        console.log('User disconnected:', user);
-    });
-   
-}
-);
+websockets(io);
 
 /** ★━━━━━━━━━━━★ CONNECTION MONGO DB ★━━━━━━━━━━━★ */
 connectMongoDB();
+
 /** ★━━━━━━━━━━━★ CONNECTION SERVER ★━━━━━━━━━━━★ */
 
 try {

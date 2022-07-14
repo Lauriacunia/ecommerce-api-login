@@ -6,6 +6,17 @@ export class MongoDBCarritos extends MongoClass {
         super("carritos", carritosSchema);
     }
 
+    // sobreescribe el metodo getAll de la clase padre
+    async getAll() {
+        // traer el carrito con los productos usando populate
+        const carritos = await this.collection.find({})
+                        .populate({path: "productos", 
+                                   populate: 
+                                            {path: "_id", model: "productos"}
+                                  });
+        return carritos;
+    }
+
     async addProductos(carrito, productos) {
         productos.forEach(producto => {
             // chequear si el producto ya esta en el carrito
