@@ -17,6 +17,19 @@ export class MongoDBCarritos extends MongoClass {
         return carritos;
     }
 
+    async getOne(id) {
+        try{
+            const one = await this.collection.findById(id)
+                        .populate({path: "productos",
+                                      populate:
+                                            {path: "_id", model: "productos"}
+                                    });
+           return one
+        }catch(err){
+            throw new Error(err)
+        }
+    } 
+
     async addProductos(carrito, productos) {
         productos.forEach(producto => {
             // chequear si el producto ya esta en el carrito
