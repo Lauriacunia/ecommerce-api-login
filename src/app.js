@@ -6,16 +6,13 @@ import cors from 'cors';
 import apiRouter from './routes/indexRoutes.js';
 import { connectMongoDB } from './config/configMongoDB.js';
 import websockets from './config/websockets.js';
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import passport from "passport";
+import 'dotenv/config';
+import './config/passport-local.js';
 const app = express();
 const PORT = 8080;
-// const chat = {
-//     id: '30950',
-//     nombre: 'Canal de chat - Comisión 30950',
-//     mensajes: [] // contiene un array de mensajes
-// }
-
-const mensajes = [];
-
 
 /** Tenemos dos servidores:  httpServer y ioServer */
 const httpServer = http.createServer(app);
@@ -39,6 +36,19 @@ app.use(cors(
        methods: 'GET, POST, PUT, DELETE, OPTIONS',
     }
 ));
+app.use(session(
+    {
+        secret: 'secret',
+        resave: true,
+        saveUninitialized: true,
+        store: MongoStore.create({
+            mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.cyfup.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
+            ttl: 60 * 10 // 10 minutes
+            })
+    }
+));
+app.use(passport.initialize()); // Inicializa passport
+app.use(passport.session()); // Enlaza passport con la sesion
 
 
 /** Routes */
@@ -48,34 +58,6 @@ app.use('/api', apiRouter);
 function onInit() {
     console.log('Iniciando App...');
 }
-/** ★━━━━━━━━━━━★ NORMALIZR ★━━━━━━━━━━━★*/
-
-// function print(obj){
-//     console.log(inspect(obj, { depth: null }));
-// }
-
-/** Definir schema autor */
-
-//const autorSchema = new schema.Entity('autores');
-
-/** Definir schema mensaje */
-
-// const mensajeSchema = new schema.Entity('mensajes', {
-//   id: { type: String },
-//   autor: autorSchema,
-//   texto: '',
-//   timestamp: { type: Number }
-// });
-
-// const chatSchema = new schema.Entity('chats', {
-//   id: { type: String },
-//   mensajes: [mensajeSchema]
-// });
-
-
-// const normalizeChat = (chat) => {
-//     return normalize(chat, chatSchema);
-// }
 
 /** ★━━━━━━━━━━━★ WEBSOCKET ★━━━━━━━━━━━★*/
 websockets(io);

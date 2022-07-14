@@ -11,7 +11,6 @@ const config = {
     }
 }
 
-
 export const connectMongoDB = async () => {
   try {
     await mongoose.connect(config.mongoDB.URL, config.mongoDB.options);
